@@ -18,7 +18,7 @@ private:
     std::set<int> user_ids; ///< Set of users
 
 public:
-    BookStorage(int max_pages, int max_users) : max_pages_(max_pages), max_users_(max_users)
+    BookStorage(int max_pages, int max_users) : max_pages_(max_pages), max_users_(max_users), top_readed_pages(0)
     {
         id_to_pages.resize(max_users_ + 1);
         pages_to_id.resize(max_pages_ + 1);
