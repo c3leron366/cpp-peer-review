@@ -7,22 +7,43 @@
 #include <iomanip>
 
 
-struct BookStorage
+class BookStorage
 {
-    constexpr static int MAX_USERS = 1001;
-    constexpr static int MAX_PAGES = 100001;
-    BookStorage()
-    {
-        pages_to_id.reserve(MAX_USERS);
-        id_to_pages.reserve(MAX_PAGES);
-    }
-    std::vector<int> id_to_pages;
-    std::vector<int> pages_to_id;
-    std::set<int> user_ids;
+private:
+    const int max_pages_;
+    const int max_users_;
+    int top_readed_pages;
+    std::vector<int> id_to_pages; ///< Contains number of readed pages. User id is index to access it
+    std::vector<int> pages_to_id; ///< Contains the number of users who have read this page. Index is number of pages
+    std::set<int> user_ids; ///< Set of users
 
+public:
+    BookStorage(int max_pages, int max_users) : max_pages_(max_pages), max_users_(max_users)
+    {
+        id_to_pages.resize(max_users_ + 1);
+        pages_to_id.resize(max_pages_ + 1);
+    }
+
+    BookStorage() = delete;
+    ~BookStorage() = default;
+    
     void AddReadedPages(int user_id, int pages)
     {
-        auto [a, is_inserted] = user_ids.insert(user_id);
+        if(user_id > max_users_ )
+        {
+            throw std::out_of_range("user_id exceed max_users");
+        }
+        if(pages > max_pages_ )
+        {
+            throw std::out_of_range("pages number exceed max_pages");
+        }
+
+        if(pages > top_readed_pages)
+        {
+            top_readed_pages = pages;
+        }
+
+        auto [_, is_inserted] = user_ids.insert(user_id);
         if(!is_inserted)
         {
             pages_to_id[id_to_pages[user_id]] -= 1;
@@ -38,22 +59,21 @@ struct BookStorage
 
         double up = 0.0;
         double down = 0.0;
-        for(int i = 0; i < pages_to_id.capacity(); i++)
+        for(int i = 0; i < top_readed_pages + 1; i++)
         {
             if(i < pos)
             {
                 up += pages_to_id[i];
             }
-            down += pages_to_id[i];
         }
 
+        down = user_ids.size();
         if(down == 1)
         {
             if(pages_to_id[pos] == 1)
             {
                 up = 1;
-            }
-                
+            }   
         }
         else if(down < 1)
         {
@@ -73,8 +93,9 @@ struct BookStorage
 };
 
 
-void parse(std::istream& input, BookStorage& storage)
+void Parse(std::istream& input, std::ostream& out, BookStorage& storage)
 {
+    out << std::setprecision(6);
     int q;
     input >> q;
     for(int idx = 0; idx < q; ++idx)
@@ -89,44 +110,27 @@ void parse(std::istream& input, BookStorage& storage)
             input >> pages;
             storage.AddReadedPages(id, pages);            
         }
-        if(s.find("CHEER") != std::string::npos)
+        else if(s.find("CHEER") != std::string::npos)
         {
             int id;
             input >> id;
-
-            std::cout << std::setprecision(6) << storage.GetUserStat(id) << std::endl;
+            out << storage.GetUserStat(id) << std::endl;
+        }
+        else
+        {
+            throw std::invalid_argument("unkown command");
         }
     }
 }
 
 
 
-std::string test_input = 
-{
-    "12\n"
-    "CHEER 5\n"
-    "READ 1 10\n"
-    "CHEER 1\n"
-    "READ 2 5\n"
-    "READ 3 7\n"
-    "CHEER 2\n"
-    "CHEER 3\n"
-    "READ 3 10\n"
-    "CHEER 3\n"
-    "READ 3 11\n"
-    "CHEER 3\n"
-    "CHEER 1\n"
-};
-
-
 int main (void)
 {
-    BookStorage users;
-    
-    // std::stringstream ss;
-    // ss << test_input;
-    // parse(ss, users);
-    parse(std::cin, users);
+    constexpr static int MAX_PAGES = 1000;
+    constexpr static int MAX_USERS = 100000;
+    BookStorage book1(MAX_PAGES, MAX_USERS);
+    Parse(std::cin, std::cout, book1);
 
     return 0;
 }
