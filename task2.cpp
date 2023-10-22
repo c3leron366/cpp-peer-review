@@ -62,12 +62,8 @@ class DomainChecker {
 public:
     // конструктор должен принимать список запрещённых доменов через пару итераторов
     template <typename Iterator>
-    DomainChecker(Iterator forbidden_begin, Iterator forbidden_end)
+    DomainChecker(Iterator forbidden_begin, Iterator forbidden_end) : fd_(forbidden_begin, forbidden_end)
     {
-        for(auto it = forbidden_begin; it != forbidden_end; ++it)
-        {
-            fd_.push_back(*it);
-        }
         std::sort(fd_.begin(), fd_.end());
         fd_.erase(std::unique(fd_.begin(), fd_.end(), [](const Domain& lhs, const Domain& rhs)
                                                     {
@@ -217,3 +213,4 @@ void TestExample()
     
     assert(result == test_1_out);
 }
+
