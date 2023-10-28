@@ -31,7 +31,7 @@ DBHandler DBConnect(const DbParams& db_params)
     return db;
 }
 
-DBQuery MakePersonQuery(const PersonParams& person_params)
+DBQuery MakePersonQuery(const PersonParams& person_params, const DBHandler& db)
 {
     ostringstream query_str;
     query_str << "from Persons "s
@@ -45,12 +45,12 @@ vector<Person> LoadPersons(const DbParams& db_params, const PersonParams& person
 {
     DBHandler db = DBConnect(db_params);
     // Если запрещены исключения, проверим корректность хэндлера БД
-    if (!db.IsOK()) 
+    if (!db_params.db_allow_exceptions && !db.IsOK()) 
     {
         return {};
     }
 
-    DBQuery query = MakePersonQuery(const PersonParams& person_params)
+    DBQuery query = MakePersonQuery(person_params, db);
 
     vector<Person> persons;
     for (auto [name, age] : db.LoadRows<string, int>(query)) 

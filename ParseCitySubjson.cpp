@@ -12,7 +12,7 @@ struct CountryParams
 
 // Дана функция ParseCitySubjson, обрабатывающая JSON-объект со списком городов конкретной страны:
 void ParseCitySubjson(vector<City>& cities, const Json& json, 
-                        const CountryParams cp, const vector<Language>& languages) {
+                        const CountryParams& cp, const vector<Language>& languages) {
     for (const auto& city_json : json.AsList()) {
         const auto& city_obj = city_json.AsObject();
         cities.push_back({city_obj["name"s].AsString(), city_obj["iso_code"s].AsString(),
