@@ -9,7 +9,7 @@ public:
         return *this;
     }
 
-    Constraints& SetMinTimeConstraint(const DateTime& max)
+    Constraints& SetMaxTimeConstraint(const DateTime& max)
     {
         max_(max);
         return *this;
@@ -19,7 +19,7 @@ public:
     {
         const bool is_leap_year = (dt.year % 4 == 0) && !(dt.year % 100 == 0 && dt.year % 400 != 0);
         const array month_lengths = {31, 28 + is_leap_year, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        max_.day = max_.month_lengths[dt.month - 1];
+        max_.day = month_lengths[dt.month - 1];
         dt_ = dt;
     }   
 
