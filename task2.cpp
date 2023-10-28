@@ -31,11 +31,14 @@ public:
         {
             return false;
         }
-        for(size_t idx = 0; idx < other.domain_.size(); ++idx)
+        else
         {
-            if(domain_[idx] != other.domain_[idx])
+            for(size_t idx = 0; idx < other.domain_.size(); ++idx)
             {
-                return false;
+                if(domain_[idx] != other.domain_[idx])
+                {
+                    return false;
+                }
             }
         }
         return true;
@@ -77,7 +80,7 @@ public:
     ~DomainChecker() = default;
     
     // разработайте метод IsForbidden, возвращающий true, если домен запрещён
-    bool IsForbidden(const Domain& tested_domain)
+    bool IsForbidden(const Domain& tested_domain) const
     {
         auto it = std::upper_bound(fd_.begin(), fd_.end(), tested_domain);     
         if (it == fd_.begin())
